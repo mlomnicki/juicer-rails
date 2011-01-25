@@ -1,0 +1,36 @@
+= juicer-rails
+
+Rails helper for Juicer - excellent asset packaging tool.
+
+https://github.com/cjohansen/juicer
+
+== Usage
+
+Create config/assets.yml file
+
+    js:
+      workspace:
+        - 'public/javascripts/jquery/jquery.js'
+        - 'public/javascripts/common.js'
+    
+    css:
+      workspace:
+        - 'public/stylesheets/application.css'
+        - 'public/stylesheets/dialogs.css'
+
+juicer-rails provides 2 helper methods
+* merged_javascripts - includes merged javascript assets
+* merged_stylesheets - includes merged and cache-friendly stylesheet assets
+
+Include merged assets in your layout
+
+    <head>
+        ...
+        <%= merged_javascripts :workspace %>
+        <%= merged_stylesheets :workspace %>
+
+    </head>
+
+== Copyright
+
+Copyright (c) 2010 Michał Łomnicki. See LICENSE for details.
