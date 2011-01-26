@@ -9,12 +9,15 @@ https://github.com/cjohansen/juicer
 Create config/assets.yml file
 
     js:
-      workspace:
+      common:
         - 'public/javascripts/jquery/jquery.js'
         - 'public/javascripts/common.js'
-    
+      myapp:
+        - 'public/javascripts/application.js'
+        - 'public/javascripts/dashboard.js'
+
     css:
-      workspace:
+      myapp:
         - 'public/stylesheets/application.css'
         - 'public/stylesheets/dialogs.css'
 
@@ -26,8 +29,8 @@ Include merged assets in your layout
 
     <head>
         ...
-        <%= merged_javascripts :workspace %>
-        <%= merged_stylesheets :workspace %>
+        <%= merged_javascripts :common, :myapp %>
+        <%= merged_stylesheets :myapp %>
 
     </head>
 
