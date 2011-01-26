@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency("juicer", "~> 1.0")
-  s.add_dependency("actionpack", ">= 2")
+  s.add_dependency("actionpack", ">= 2.1")
 end

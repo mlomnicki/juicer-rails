@@ -1,41 +1,53 @@
 require 'juicer'
-require 'yaml'
+require 'fileutils'
 
 class Juicer::Collection
-
-  @@config_file = Rails.root.join('config/assets.yml')
-  @@yaml = YAML.load_file(@@config_file)
 
   class << self
     extend ActiveSupport::Memoizable
 
-    unless Rails.env.development?
-
-      def merge(key, type)
-        merged_path = path(key, type)
-        unless merged_path.exist?
-          merger = new(key, type).merge
-          merger.bust_cache if type == 'css'
-
-        end
-        "/assets/#{key}.#{type}"
+    def dispatch(key, type)
+      if JuicerRails.perform_compilation?
+        compile(key, type)
+      else
+        embed_standalone(key, type)
       end
-      memoize :merge
-
-    else
-
-      def merge(key, type)
-        dir = case type.to_s
-              when 'js': 'javascripts'
-              when 'css': 'stylesheets'
-              end
-        new(key, type).paths.collect { |p| Rails.root.join(p).relative_path_from(Rails.root.join('public', dir)).to_s }
-      end
-
     end
 
-    def path(key, type)
-      Rails.root.join("public/assets/#{key}.#{type}")
+    def compile(key, type)
+      self.new(key, type).compile 
+      destination_compiled_path(key, type).to_s
+    end
+    memoize :compile
+
+    # Embeds each asset as standalone file.
+    # The best mode for development purposes. No merging occurs
+    def embed_standalone(key, type)
+      dir = case type.to_s
+            when 'js' then 'javascripts'
+            when 'css' then 'stylesheets'
+            end
+      new(key, type).paths.collect { |p| Rails.root.join(p).relative_path_from(public_path.join(dir)).to_s }
+    end
+
+    def compiled_directory
+      public_path.join(JuicerRails.compiled_assets_directory)
+    end
+
+    def compiled_path(key, type)
+      compiled_directory.join("#{key}.#{type}")
+    end
+
+    def relative_compiled_path(key, type)
+      compiled_path(key, type).relative_path_from(public_path)
+    end
+
+    def destination_compiled_path(key, type)
+      "/#{relative_compiled_path(key, type)}"
+    end
+
+    def public_path
+      @public_path ||= Rails.root.join('public')
     end
 
   end
@@ -45,21 +57,54 @@ class Juicer::Collection
   def initialize(key, type, options = {})
     @type = type
     @key = key
-    @paths = @@yaml[type.to_s][key.to_s]
+    @paths = JuicerRails.config[type.to_s][key.to_s]
+    @destination_dir = self.class.compiled_directory
+    @destination_path = self.class.compiled_path(key, type)
+    ensure_destination_directory_exists
   end
 
+  # Produces production ready assets.
+  # Merges, appends timestamps for images, embeds images into stylesheets
+  # and tries to do everything what juicer can.
+  # TODO: only merging and cache buster are implemented at the moment
+  def compile
+    merge
+    bust_cache
+  end
+
+  # Depending on type merges and saves compiled asset
   def merge
     if @type == 'js'
-      merger = Juicer::Merger::JavaScriptMerger.new(@paths)
+      merger = merge_javascripts
     elsif @type == 'css'
-      merger = Juicer::Merger::StylesheetMerger.new(@paths, :document_root => Rails.root.join('public/stylesheets'))
+      merger = merge_stylesheets
     end
-    merger.save(self.class.path(@key, @type).to_s)
+    save(merger)
+    self
+  end
+
+  def merge_javascripts
+    Juicer::Merger::JavaScriptMerger.new(@paths)
+  end
+
+  def merge_stylesheets
+    Juicer::Merger::StylesheetMerger.new(@paths, :document_root => Rails.root.join('public/stylesheets'))
+  end
+
+  def save(compiler)
+    compiler.save(@destination_path.to_s)
     self
   end
 
   def bust_cache
-    Juicer::CssCacheBuster.new.save(self.class.path(@key, @type).to_s)
+    Juicer::CssCacheBuster.new.save(@destination_path.to_s)
+    self
+  end
+
+  def ensure_destination_directory_exists
+    unless @destination_dir.exist?
+      FileUtils.mkdir_p(@destination_dir.to_s)
+    end
   end
 
 end
