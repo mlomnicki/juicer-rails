@@ -29,10 +29,33 @@ Include merged assets in your layout
 
     <head>
         ...
-        <%= merged_javascripts :common, :myapp %>
+        <%= merged_javascripts :common %>
+        <%= merged_javascripts :myapp %>
         <%= merged_stylesheets :myapp %>
 
     </head>
+
+Please note that assets will be compiled only in production environemnt unless
+<tt>always_compile</tt> options is set.
+
+== Configuration
+
+Create config/initializers/juicer-rails.rb
+
+    JuicerRails.setup do |config|
+        # config.always_compile = true
+
+        # add more options here
+    end
+
+Available options are:
+
+    * config_file - path of confiugration file. default: config/assets.yml
+    * config - configuration in YAML format. default: content of config_file 
+    * environemnt - current environment name. default: Rails.env
+    * compile_environments - which environments triggers compiling assets. default: production
+    * always_compile - always compile assets, no matter the environemnt. default: false
+    * compiled_assets_directory - subdirectory of public directory where compiled assets are stored. default: assets
 
 == Copyright
 
