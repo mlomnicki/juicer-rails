@@ -37,6 +37,10 @@ module JuicerRails
     yield self
   end
 
+  def self.warn(text)
+    ActiveSupport::Deprecation.warn("** JUICER-RAILS: #{text}")
+  end
+
 end
 
 ActionView::Base.send(:include, Juicer::Helper)

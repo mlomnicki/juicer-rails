@@ -58,6 +58,10 @@ class Juicer::Collection
     @type = type
     @key = key
     @paths = JuicerRails.config[type.to_s][key.to_s]
+    unless @paths.is_a?(Array)
+      JuicerRails.warn("Wrong configuration for '#{key}'. Check you config file")
+      @paths = []
+    end
     @destination_dir = self.class.compiled_directory
     @destination_path = self.class.compiled_path(key, type)
     ensure_destination_directory_exists
