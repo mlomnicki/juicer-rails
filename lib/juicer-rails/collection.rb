@@ -73,7 +73,7 @@ class Juicer::Collection
   # TODO: only merging and cache buster are implemented at the moment
   def compile
     merge
-    bust_cache
+    bust_cache if @type == 'css'
   end
 
   # Depending on type merges and saves compiled asset

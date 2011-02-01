@@ -2,6 +2,7 @@
 
 == 0.1.1 (01.02.2011)
 * warn is undefined key is referenced
+* don't try to bust cache for javascript files
 
 == 0.1.0 (26.01.2011)
 * initial release
