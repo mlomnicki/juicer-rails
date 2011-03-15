@@ -2,12 +2,12 @@ require 'juicer-rails/collection'
 
 module Juicer::Helper
 
-  def merged_javascripts(key)
-    javascript_include_tag(Juicer::Collection.dispatch(key, 'js'))
+  def merged_javascripts(key, options = {})
+    javascript_include_tag(Juicer::Collection.dispatch(key, 'js'), options)
   end
 
-  def merged_stylesheets(key)
-    stylesheet_link_tag(Juicer::Collection.dispatch(key, 'css'))
+  def merged_stylesheets(key, options = {})
+    stylesheet_link_tag(Juicer::Collection.dispatch(key, 'css'), options)
   end
 
 end

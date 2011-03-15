@@ -1,7 +1,10 @@
 = CHANGELOG
 
+== 0.1.2 (15.03.2011)
+* allow to pass options to helper methods (thx gsusmonzon)
+
 == 0.1.1 (01.02.2011)
-* warn is undefined key is referenced
+* warn if undefined key is referenced
 * don't try to bust cache for javascript files
 
 == 0.1.0 (26.01.2011)

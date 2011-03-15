@@ -32,6 +32,7 @@ Include merged assets in your layout
         <%= merged_javascripts :common %>
         <%= merged_javascripts :myapp %>
         <%= merged_stylesheets :myapp %>
+        <%= merged_stylesheets :printer, :media => :print %>
 
     </head>
 
