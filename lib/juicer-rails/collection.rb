@@ -15,17 +15,20 @@ class Juicer::Collection
     end
 
     def compile(key, type)
-      self.new(key, type).compile 
+      self.new(key, type).compile
       destination_compiled_path(key, type).to_s
     end
+
     memoize :compile
 
     # Embeds each asset as standalone file.
     # The best mode for development purposes. No merging occurs
     def embed_standalone(key, type)
       dir = case type.to_s
-            when 'js' then 'javascripts'
-            when 'css' then 'stylesheets'
+              when 'js' then
+                'javascripts'
+              when 'css' then
+                'stylesheets'
             end
       new(key, type).paths.collect { |p| Rails.root.join(p).relative_path_from(public_path.join(dir)).to_s }
     end
@@ -74,6 +77,7 @@ class Juicer::Collection
   def compile
     merge
     bust_cache if @type == 'css'
+    minify
   end
 
   # Depending on type merges and saves compiled asset
@@ -93,6 +97,17 @@ class Juicer::Collection
 
   def merge_stylesheets
     Juicer::Merger::StylesheetMerger.new(@paths, :document_root => Rails.root.join('public/stylesheets'))
+  end
+
+  def minify
+    input = @destination_path.to_s
+    compressor.save(input, nil, @type.to_sym)  #suplying a nit output so that Juicer Minifyer uses a temp file for work, preventing from corrupt input if errors
+    self
+  end
+
+  def compressor
+    #from http://groups.google.com/group/juicer-dev/browse_thread/thread/9c265740699ec850
+    @compressor ||= Juicer::Minifyer::YuiCompressor.new({:bin_path => File.join(Juicer.home, "lib/yui_compressor/bin")})
   end
 
   def save(compiler)
