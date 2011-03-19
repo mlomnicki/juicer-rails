@@ -1,5 +1,11 @@
 = CHANGELOG
 
+== fork  (19.03.2011 bis)
+* changed image busting to point to 'public' directory of the project, so images are found and warnings go off
+
+ == fork  (19.03.2011)
+* add JS and CSS minification via YUI compressor
+
 == 0.1.2 (15.03.2011)
 * allow to pass options to helper methods (thx gsusmonzon)
 

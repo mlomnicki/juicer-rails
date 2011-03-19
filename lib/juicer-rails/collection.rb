@@ -116,7 +116,7 @@ class Juicer::Collection
   end
 
   def bust_cache
-    Juicer::CssCacheBuster.new.save(@destination_path.to_s)
+    Juicer::CssCacheBuster.new(:document_root =>  Rails.root.join('public').to_s).save(@destination_path.to_s)
     self
   end
 
