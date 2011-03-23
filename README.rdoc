@@ -58,6 +58,11 @@ Available options are:
     * always_compile - always compile assets, no matter the environemnt. default: false
     * compiled_assets_directory - subdirectory of public directory where compiled assets are stored. default: assets
 
+== Contributors
+
+* Michał Łomnicki - http://mlomnicki.com
+* gsusmonzon - https://github.com/gsusmonzon
+
 == Copyright
 
 Copyright (c) 2010 Michał Łomnicki. See LICENSE for details.
